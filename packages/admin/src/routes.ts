@@ -21,10 +21,16 @@ export const routes: IRoute[] = [
         key: 'dashboard/workplace',
       },
     ],
+    // breadcrumb: true, // 当前页是否展示面包屑
+    // ignore: true, // 当前路由是否渲染菜单项
   },
   {
     name: 'Example',
     key: 'example',
+  },
+  {
+    name: 'menu.user',
+    key: 'user',
   },
 ];
 
