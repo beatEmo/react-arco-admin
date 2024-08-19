@@ -2,7 +2,7 @@ const i18n = {
   'en-US': {
     'menu.dashboard': 'Dashboard',
     'menu.dashboard.workplace': 'Workplace',
-    'menu.example': 'User',
+    'menu.user': 'User',
     'menu.user.info': 'User Info',
     'menu.user.setting': 'User Setting',
     'menu.user.switchRoles': 'Switch Roles',
