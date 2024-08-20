@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { usePagination } from 'ahooks';
 import {
   Card,
@@ -10,6 +10,7 @@ import {
   TableColumnProps,
   Message,
 } from '@arco-design/web-react';
+import DrawerForm from './form';
 
 const { Title } = Typography;
 
@@ -97,11 +98,19 @@ const UserPage = () => {
       }
     }
   };
+
+  const [visible, setVisible] = useState(false);
+  const onAdd = () => {
+    setVisible(true);
+  };
+
   return (
     <Card>
       <Title heading={6}>用户管理</Title>
       <Space direction="vertical" style={{ width: '100%' }}>
-        <Button type="primary">新增用户</Button>
+        <Button type="primary" onClick={onAdd}>
+          新增用户
+        </Button>
         <Table
           data={data?.list}
           loading={loading}
@@ -111,6 +120,7 @@ const UserPage = () => {
           style={{ width: '100%' }}
         ></Table>
       </Space>
+      <DrawerForm {...{ visible, setVisible }}></DrawerForm>
     </Card>
   );
 };
