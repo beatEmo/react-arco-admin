@@ -31,6 +31,21 @@ const deleteTableData = async (id) => {
   return { ok: res.affected === 1 };
 };
 
+export const initial = {
+  _id: '',
+  phoneNumber: '',
+  password: '',
+  name: '',
+  avatar: '',
+  email: '',
+  job: '',
+  jobName: '',
+  organization: '',
+  location: '',
+  personalWebsite: '',
+};
+export type User = typeof initial;
+
 const UserPage = () => {
   const { data, pagination, loading, refresh } = usePagination(getTableData, {
     defaultCurrent: 1,
@@ -86,8 +101,6 @@ const UserPage = () => {
     },
   ];
   const tableCallback = async (record, operation) => {
-    console.log('操作', operation);
-    console.log('记录', record);
     if (operation === 'delete') {
       const { ok } = await deleteTableData(record._id);
       if (ok) {
@@ -96,11 +109,18 @@ const UserPage = () => {
       } else {
         Message.error('删除失敗');
       }
+    } else {
+      console.log(record);
+
+      setEditedItem(record);
+      setVisible(true);
     }
   };
 
   const [visible, setVisible] = useState(false);
+  const [editedItem, setEditedItem] = useState<User>(initial);
   const onAdd = () => {
+    setEditedItem(initial);
     setVisible(true);
   };
 
@@ -120,7 +140,9 @@ const UserPage = () => {
           style={{ width: '100%' }}
         ></Table>
       </Space>
-      <DrawerForm {...{ visible, setVisible }}></DrawerForm>
+      <DrawerForm
+        {...{ visible, setVisible, editedItem, callback: () => refresh() }}
+      ></DrawerForm>
     </Card>
   );
 };
