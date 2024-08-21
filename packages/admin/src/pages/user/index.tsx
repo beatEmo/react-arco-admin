@@ -110,8 +110,6 @@ const UserPage = () => {
         Message.error('删除失敗');
       }
     } else {
-      console.log(record);
-
       setEditedItem(record);
       setVisible(true);
     }
