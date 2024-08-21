@@ -106,7 +106,7 @@ function UserForm({ visible, setVisible, editedItem, callback }: FormProps) {
           <Input placeholder="请输入用户名" />
         </Form.Item>
         <Form.Item label="头像" field="avatar">
-          <AvatarUploader />
+          <AvatarUploader {...{ visible }} />
         </Form.Item>
         <Form.Item label="邮箱" field="email">
           <Input placeholder="请输入邮箱" />

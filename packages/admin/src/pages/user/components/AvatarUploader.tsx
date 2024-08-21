@@ -1,12 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Upload, Progress, Image, Form } from '@arco-design/web-react';
 import { IconPlus, IconEdit } from '@arco-design/web-react/icon';
 import { UploadItem } from '@arco-design/web-react/es/Upload';
 
-export default function () {
+interface AvatarUploaderProps {
+  visible: boolean;
+}
+
+export default function (props: AvatarUploaderProps) {
+  const { visible } = props;
   const { form, disabled } = Form.useFormContext();
   const [file, setFile] = React.useState<UploadItem>();
-  console.log(file, '============');
+
+  useEffect(() => {
+    if (!visible) {
+      setFile(undefined);
+    }
+  }, [visible]);
 
   const cs = `arco-upload-list-item${
     file && file.status === 'error' ? ' is-error' : ''
