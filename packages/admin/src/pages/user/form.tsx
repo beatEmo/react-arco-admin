@@ -1,7 +1,9 @@
 import React, { useMemo } from 'react';
-import { Drawer, Form, Input, Message } from '@arco-design/web-react';
+import { Drawer, Form, Input, Message, Select } from '@arco-design/web-react';
 import { User } from '.';
 import AvatarUploader from './components/AvatarUploader';
+import { useRequest } from 'ahooks';
+import { getAllRoles } from '../role/api';
 
 type FormProps = {
   visible: boolean;
@@ -40,6 +42,18 @@ function UserForm({ visible, setVisible, editedItem, callback }: FormProps) {
     () => (editedItem._id ? '更新' : '新增') + name,
     [editedItem._id]
   );
+
+  const { data: roles, run } = useRequest(getAllRoles, { manual: true });
+
+  const rolesOptions = useMemo(() => {
+    if (roles) {
+      return roles.map((role) => ({
+        label: role.name,
+        value: role._id,
+      }));
+    }
+    return [];
+  }, [roles]);
 
   const onSubmit = () => {
     form.validate(async (errors) => {
@@ -82,6 +96,9 @@ function UserForm({ visible, setVisible, editedItem, callback }: FormProps) {
       }}
       afterOpen={() => {
         form.setFieldsValue(editedItem);
+        if (!roles) {
+          run();
+        }
       }}
       afterClose={() => {
         form.resetFields();
@@ -104,6 +121,13 @@ function UserForm({ visible, setVisible, editedItem, callback }: FormProps) {
           rules={[{ required: true, message: '用户名是必填项' }]}
         >
           <Input placeholder="请输入用户名" />
+        </Form.Item>
+        <Form.Item
+          label="角色"
+          field="role"
+          rules={[{ required: true, message: '角色是必填项' }]}
+        >
+          <Select placeholder="请选择角色" options={rolesOptions}></Select>
         </Form.Item>
         <Form.Item label="头像" field="avatar">
           <AvatarUploader {...{ visible }} />
