@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Card,
   Typography,
@@ -10,6 +10,8 @@ import {
   Form,
   Input,
   Message,
+  Tree,
+  Checkbox,
 } from '@arco-design/web-react';
 import { usePagination } from 'ahooks';
 import {
@@ -20,18 +22,74 @@ import {
   Role,
   updateRole,
 } from './api';
+import { IRoute, routes } from '@/routes';
+import useLocale from '@/utils/useLocale';
+import { TreeDataType } from '@arco-design/web-react/es/Tree/interface';
+import useCheckbox from '@arco-design/web-react/es/Checkbox/useCheckbox';
 
 const { Title, Text } = Typography;
 const FormItem = Form.Item;
 
 let authSelectResult: { [key: string]: string[] } = {};
 
+// 深度递归遍历路由表获得权限树
+// 传入深度递归遍历的路由表 和 国际化对象
+function generateMenus(routes: IRoute[], t: Record<string, string>) {
+  return routes.map((route) => {
+    const item: TreeDataType = {
+      title: t[route.name],
+      key: route.key,
+    };
+    if (route.children) {
+      item.children = generateMenus(route.children, t);
+    }
+    return item;
+  });
+}
+
 const RolePage = () => {
   const [editedItem, setEditedItem] = useState<Role>(initial);
-
   const onAdd = () => {
     setDrawerVisible(true);
     setEditedItem(initial);
+  };
+
+  const t = useLocale();
+  const menus = generateMenus(routes, t);
+
+  const RenderAuthTree = (node: TreeDataType) => {
+    const options = ['read', 'write'];
+    // 通过useCheckbox 快捷使用Checkbox
+    const { selected, setSelected } = useCheckbox(options);
+
+    // 这里也是页面首次渲染时，设置一下checkboxes的默认值
+    useEffect(() => {
+      // 当前角色存在权限时
+      if (editedItem.permissions) {
+        // 根据编辑中角色的permissions，设置选中状态
+        setSelected(editedItem.permissions[node.dataRef.key]);
+        // 记录权限选择结果
+        if (editedItem.permissions[node.dataRef.key]) {
+          authSelectResult[node.dataRef.key] =
+            editedItem.permissions[node.dataRef.key];
+        }
+      }
+    }, [editedItem.permissions]);
+
+    return (
+      <Checkbox.Group
+        value={selected}
+        options={options}
+        onChange={(value) => {
+          if (value.length) {
+            authSelectResult[node._key] = value;
+          } else {
+            Reflect.deleteProperty(authSelectResult, node._key);
+          }
+          setSelected(value);
+        }}
+      />
+    );
   };
 
   const onEditedItemChange = (key: string, value: unknown) => {
@@ -168,6 +226,13 @@ const RolePage = () => {
                 value={editedItem.name}
                 onChange={(value: string) => onEditedItemChange('name', value)}
               />
+            </FormItem>
+            <FormItem label="权限设置">
+              <Tree
+                treeData={menus}
+                blockNode
+                renderExtra={RenderAuthTree}
+              ></Tree>
             </FormItem>
           </Form>
         </Drawer>

@@ -41,5 +41,5 @@ export function deleteRole(id: string) {
 }
 
 export function updateRole(role: Role) {
-  return http.patch(`/api/Role/${role._id}`, role);
+  return http.patch(`${url}/${role._id}`, role);
 }
