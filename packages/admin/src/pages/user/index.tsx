@@ -11,6 +11,7 @@ import {
   Message,
 } from '@arco-design/web-react';
 import DrawerForm from './form';
+import PermissionWrapper from '@/components/PermissionWrapper';
 
 const { Title } = Typography;
 
@@ -78,24 +79,30 @@ const UserPage = () => {
       dataIndex: 'operations',
       render: (_: unknown, record) => (
         <>
-          <Button
-            type="text"
-            size="small"
-            onClick={() => tableCallback(record, 'edit')}
+          <PermissionWrapper
+            requiredPermissions={[
+              { resource: 'role', actions: ['read', 'write'] },
+            ]}
           >
-            编辑
-          </Button>
-          <Popconfirm
-            focusLock
-            title="确认删除吗?"
-            okText="确认"
-            cancelText="取消"
-            onOk={() => tableCallback(record, 'delete')}
-          >
-            <Button type="text" size="small">
-              删除
+            <Button
+              type="text"
+              size="small"
+              onClick={() => tableCallback(record, 'edit')}
+            >
+              编辑
             </Button>
-          </Popconfirm>
+            <Popconfirm
+              focusLock
+              title="确认删除吗?"
+              okText="确认"
+              cancelText="取消"
+              onOk={() => tableCallback(record, 'delete')}
+            >
+              <Button type="text" size="small">
+                删除
+              </Button>
+            </Popconfirm>
+          </PermissionWrapper>
         </>
       ),
     },
